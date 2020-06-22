@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Posts on 测试</title>
+    <title>Posts on 春洋笔记</title>
     <link>http://www.chunyangbiji.top/post/</link>
-    <description>Recent content in Posts on 测试</description>
+    <description>Recent content in Posts on 春洋笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     
@@ -11,11 +11,35 @@
     
     
     <item>
-      <title>SpringClond1</title>
-      <link>http://www.chunyangbiji.top/post/first/</link>
+      <title>redis-面试题</title>
+      <link>http://www.chunyangbiji.top/post/redis/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://www.chunyangbiji.top/post/first/</guid>
+      <guid>http://www.chunyangbiji.top/post/redis/</guid>
+      <description>1.缓存穿透  缓存穿透是指查询一个一定不存在的数据，由于缓存是不命中时被动写的，并且出于容错考虑，如果从存储层查不到数据则不写入缓存，这将导致这个不存在的数据每次请求都要到存储层去查询，失去了缓存的意义。在流量大时，可能DB就挂掉了，要是有人利用不存在的key频繁攻击我们的应用，这就是漏洞。
+ 解决方案： 有很多种方法可以有效地解决缓存穿透问题，最常见的则是采用布隆过滤器，将所有可能存在的数据哈希到一个足够大的bitmap中，一个一定不存在的数据会被 这个bitmap拦截掉，从而避免了对底层存储系统的查询压力。另外也有一个更为简单粗暴的方法，如果一个查询返回的数据为空（不管是数 据不存在，还是系统故障），我们仍然把这个空结果进行缓存，但它的过期时间会很短，最长不超过五分钟。
+2.缓存雪崩  缓存雪崩是指在我们设置缓存时采用了相同的过期时间，导致缓存在某一时刻同时失效，请求全部转发到DB，DB瞬时压力过重雪崩。
+ 解决方案：  缓存失效时的雪崩效应对底层系统的冲击非常可怕。大多数系统设计者考虑用加锁或者队列的方式保证缓存的单线 程（进程）写，从而避免失效时大量的并发请求落到底层存储系统上。这里分享一个简单方案就时讲缓存失效时间分散开，比如我们可以在原有的失效时间基础上增加一个随机值，比如1-5分钟随机，这样每一个缓存的过期时间的重复率就会降低，就很难引发集体失效的事件。
+ 3.缓存击穿  对于一些设置了过期时间的key，如果这些key可能会在某些时间点被超高并发地访问，是一种非常“热点”的数据。这个时候，需要考虑一个问题：缓存被“击穿”的问题，这个和缓存雪崩的区别在于这里针对某一key缓存，前者则是很多key。缓存在某个时间点过期的时候，恰好在这个时间点对这个Key有大量的并发请求过来，这些请求发现缓存过期一般都会从后端DB加载数据并回设到缓存，这个时候大并发的请求可能会瞬间把后端DB压垮。
+ 解决方案：  我们的目标是：尽量少的线程构建缓存(甚至是一个) + 数据一致性 + 较少的潜在危险，下面会介绍四种方法来解决这个问题：
+  1、使用互斥锁(mutex key): 这种解决方案思路比较简单，就是只让一个线程构建缓存，其他线程等待构建缓存的线程执行完，重新从缓存获取数据就可以了（如下图）
+如果是单机，可以用synchronized或者lock来处理，如果是分布式环境可以用分布式锁就可以了（分布式锁，可以用memcache的add, redis的setnx, zookeeper的添加节点操作）。
+下面是Tim yang博客的代码，是memcache的伪代码实现
+    如果换成redis，就是：
+   2、&amp;ldquo;提前&amp;quot;使用互斥锁(mutex key)：  在value内部设置1个超时值(timeout1), timeout1比实际的memcache timeout(timeout2)小。当从cache读取到timeout1发现它已经过期时候，马上延长timeout1并重新设置到cache。然后再从数据库加载数据并设置到cache中。伪代码如下：
+   3、&amp;ldquo;永远不过期&amp;rdquo;：  ​	这里的“永远不过期”包含两层意思：
+​	1、从redis上看，确实没有设置过期时间，这就保证了，不会出现热点key过期问题，也就是“物理”不过期。
+​	2、从功能上看，如果不过期，那不就成静态的了吗？所以我们把过期时间存在key对应的value里，如果发现要过期了，通过一个后台的异步线程进行缓存的构建，也就是“逻辑”过期
+    从实战看，这种方法对于性能非常友好，唯一不足的就是构建缓存时候，其余线程(非构建缓存的线程)可能访问的是老数据，但是对于一般的互联网功能来说这个还是可以忍受。
+   4、资源保护：  之前在缓存雪崩那篇文章提到了netflix的hystrix，可以做资源的隔离保护主线程池，如果把这个应用到缓存的构建也未尝不可。</description>
+    </item>
+    
+    <item>
+      <title>SpringCloud1</title>
+      <link>http://www.chunyangbiji.top/post/springcloud1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://www.chunyangbiji.top/post/springcloud1/</guid>
       <description>1.初识SpringCloud 微服务是一种架构方式，最终肯定需要技术架构去实施。
 微服务的实现方式很多，但是最火的莫过于Spring Cloud了。为什么？
 后台硬：作为Spring家族的一员，有整个Spring全家桶靠山，背景十分强大。
@@ -31,14 +55,90 @@ Ribbon：客户端负载均衡的服务调用组件（客户端负载）
 Feign：服务调用，给予Ribbon和Hystrix的声明式服务调用组件 （声明式服务调用）
 Hystrix：容错管理组件，实现断路器模式，帮助服务依赖中出现的延迟和为故障提供强大的容错能力。(熔断、断路器，容错)
 架构图：
-以上只是其中一部分。
+  以上只是其中一部分。
 1.2版本 因为Spring Cloud不同其他独立项目，它拥有很多子项目的大项目。所以它的版本是版本名+版本号 （如Angel.SR6）。
 版本名：是伦敦的地铁名
 版本号：SR（Service Releases）是固定的 ,大概意思是稳定版本。后面会有一个递增的数字。
 所以 Edgware.SR3就是Edgware的第3个Release版本。
-我们在项目中，会是以Finchley的版本。
+  我们在项目中，会是以Finchley的版本。
 其中包含的组件，也都有各自的版本，如下表：
-   Component Edgware.SR3 Finchley.RC1 Finchley.BUILD-SNAPSHOT     spring-cloud-aws 1.2.2.RELEASE 2.0.0.RC1 2.0.0.BUILD-SNAPSHOT   spring-cloud-bus 1.3.2.RELEASE 2.0.0.RC1 2.0.0.BUILD-SNAPSHOT   spring-cloud-cli 1.4.1.RELEASE 2.0.0.RC1 2.0.0.BUILD-SNAPSHOT   spring-cloud-commons 1.3.3.RELEASE 2.0.0.RC1 2.0.0.BUILD-SNAPSHOT   spring-cloud-contract 1.2.4.RELEASE 2.0.0.RC1 2.</description>
+   Component Edgware.SR3 Finchley.RC1 Finchley.BUILD-SNAPSHOT     spring-cloud-aws 1.2.2.RELEASE 2.0.0.RC1 2.0.0.BUILD-SNAPSHOT   spring-cloud-bus 1.3.2.RELEASE 2.0.0.RC1 2.0.0.BUILD-SNAPSHOT   spring-cloud-cli 1.4.1.RELEASE 2.0.0.RC1 2.0.0.BUILD-SNAPSHOT   spring-cloud-commons 1.3.3.RELEASE 2.0.0.RC1 2.0.0.BUILD-SNAPSHOT   spring-cloud-contract 1.</description>
+    </item>
+    
+    <item>
+      <title>SpringCloud2</title>
+      <link>http://www.chunyangbiji.top/post/springcloud2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://www.chunyangbiji.top/post/springcloud2/</guid>
+      <description>1.负载均衡Ribbon 在刚才的案例中，我们启动了一个yh-service-provider，然后通过DiscoveryClient来获取服务实例信息，然后获取ip和端口来访问。
+但是实际环境中，我们往往会开启很多个yh-service-provider的集群。此时我们获取的服务列表中就会有多个，到底该访问哪一个呢？
+一般这种情况下我们就需要编写负载均衡算法，在多个实例列表中进行选择。
+不过Eureka中已经帮我们集成了负载均衡组件：Ribbon，简单修改代码即可使用。
+什么是Ribbon：
+  1.1.启动两个服务实例 首先参照yh-eureka启动两个yhServiceProviderApplication实例，一个8081，一个8082。
+Eureka监控面板：
+  2.2.开启负载均衡 因为Eureka中已经集成了Ribbon，所以我们无需引入新的依赖，直接修改代码。
+修改yh-service-consumer的引导类，在RestTemplate的配置方法上添加@LoadBalanced注解：
+@Bean @LoadBalanced public RestTemplate restTemplate() { return new RestTemplate(); } 修改调用方式，不再手动获取ip和端口，而是直接通过服务名称调用：
+@Controller @RequestMapping(&amp;#34;consumer/user&amp;#34;) public class UserController { @Autowired private RestTemplate restTemplate; //@Autowired  //private DiscoveryClient discoveryClient; // 注入discoveryClient，通过该客户端获取服务列表  @GetMapping @ResponseBody public User queryUserById(@RequestParam(&amp;#34;id&amp;#34;) Long id){ // 通过client获取服务提供方的服务列表，这里我们只有一个  // ServiceInstance instance = discoveryClient.getInstances(&amp;#34;service-provider&amp;#34;).get(0);  String baseUrl = &amp;#34;http://service-provider/user/&amp;#34; + id; User user = this.</description>
+    </item>
+    
+    <item>
+      <title>系统架构演变</title>
+      <link>http://www.chunyangbiji.top/post/%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84%E6%BC%94%E5%8F%98/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://www.chunyangbiji.top/post/%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84%E6%BC%94%E5%8F%98/</guid>
+      <description>1.系统架构演变 1.1集中式架构 当网站流量很小时，只需一个应用，将所有功能都部署在一起，以减少部署节点和成本。此时，用于简化增删改查工作量的数据访问框架(ORM)是影响项目开发的关键。
+  存在的问题：
+代码耦合，开发维护困难
+无法针对不同模块进行针对性优化
+无法水平扩展
+单点容错率低，并发能力差
+1.2.垂直拆分 当访问量逐渐增大，单一应用无法满足需求，此时为了应对更高的并发和业务需求，我们根据业务功能对系统进行拆分:
+  优点：
+系统拆分实现了流量分担，解决了并发问题
+可以针对不同模块进行优化
+方便水平扩展，负载均衡，容错率提高
+缺点：
+系统间相互独立，会有很多重复开发工作，影响开发效率
+1.3.分布式服务 当垂直应用越来越多，应用之间交互不可避免，将核心业务抽取出来，作为独立的服务，逐渐形成稳定的服务中心，使前端应用能更快速的响应多变的市场需求。此时，用于提高业务复用及整合的分布式调用是关键。
+  优点：
+将基础服务进行了抽取，系统间相互调用，提高了代码复用和开发效率
+缺点：
+系统间耦合度变高，调用关系错综复杂，难以维护
+1.4.流动计算架构（SOA） SOA ：面向服务的架构
+当服务越来越多，容量的评估，小服务资源的浪费等问题逐渐显现，此时需增加一个调度中心基于访问压力实时管理集群容量，提高集群利用率。此时，用于提高机器利用率的资源调度和治理中心(SOA)是关键
+  以前出现了什么问题？
+服务越来越多，需要管理每个服务的地址
+调用关系错综复杂，难以理清依赖关系
+服务过多，服务状态难以管理，无法根据服务情况动态管理
+服务治理要做什么？
+服务注册中心，实现服务自动注册和发现，无需人为记录服务地址
+服务自动订阅，服务列表自动推送，服务调用透明化，无需关心依赖关系
+动态监控服务状态监控报告，人为控制服务状态
+缺点：
+服务间会有依赖关系，一旦某个环节出错会影响较大
+服务关系复杂，运维、测试部署困难，不符合DevOps思想
+1.5.微服务 前面说的SOA，英文翻译过来是面向服务。微服务，似乎也是服务，都是对系统进行拆分。因此两者非常容易混淆，但其实却有一些差别：
+微服务的特点：
+单一职责：微服务中每一个服务都对应唯一的业务能力，做到单一职责
+微：微服务的服务拆分粒度很小，例如一个用户管理就可以作为一个服务。每个服务虽小，但“五脏俱全”。
+面向服务：面向服务是说每个服务都要对外暴露Rest风格服务接口API。并不关心服务的技术实现，做到与平台和语言无关，也不限定用什么技术实现，只要提供Rest的接口即可。
+自治：自治是说服务间互相独立，互不干扰
+团队独立：每个服务都是一个独立的开发团队，人数不能过多。
+技术独立：因为是面向服务，提供Rest接口，使用什么技术没有别人干涉
+前后端分离：采用前后端分离开发，提供统一Rest接口，后端不用再为PC、移动段开发不同接口
+数据库分离：每个服务都使用自己的数据源
+部署独立，服务间虽然有调用，但要做到服务重启不影响其它服务。有利于持续集成和持续交付。每个服务都是独立的组件，可复用，可替换，降低耦合，易维护
+微服务结构图：
+  2.服务调用方式 2.1.RPC和HTTP 无论是微服务还是SOA，都面临着服务间的远程调用。那么服务间的远程调用方式有哪些呢？
+常见的远程调用方式有以下2种：
+RPC：Remote Produce Call远程过程调用，类似的还有RMI。自定义数据格式，基于原生TCP通信，速度快，效率高。早期的webservice，现在热门的dubbo，都是RPC的典型代表
+Http：http其实是一种网络传输协议，基于TCP，规定了数据传输的格式。现在客户端浏览器与服务端通信基本都是采用Http协议，也可以用来进行远程服务调用。缺点是消息封装臃肿，优势是对服务的提供和调用方没有任何技术限定，自由灵活，更符合微服务理念。
+现在热门的Rest风格，就可以通过http协议来实现。
+如果你们公司全部采用Java技术栈，那么使用Dubbo作为微服务架构是一个不错的选择。</description>
     </item>
     
   </channel>
