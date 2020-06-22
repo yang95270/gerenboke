@@ -454,7 +454,7 @@ AOF 文件中并不常见， 但是对比来说， RDB 几乎是不可能出现�
 <p><img src="./imgs/redis11.jpg" alt=""></p>
 <p>我们可以看到，RedissonLock是可重入的，并且考虑了失败重试，可以设置锁的最大等待时间， 在实现上也做了一些优化，减少了无效的锁申请，提升了资源的利用率。</p>
 <p>需要特别注意的是，RedissonLock 同样没有解决 节点挂掉的时候，存在丢失锁的风险的问题。而现实情况是有一些场景无法容忍的，所以 Redisson 提供了实现了redlock算法的 RedissonRedLock，RedissonRedLock 真正解决了单点失败的问题，代价是需要额外的为 RedissonRedLock 搭建Redis环境。</p>
-<p>所以，如果业务场景可以容忍这种小概率的错误，则推荐使用 RedissonLock， 如果无法容忍，则推荐使用 RedissonRedLock。</p>
+<p>所以，如果业务场景可以容忍这种小概率的错误，则推荐使用 RedissonLock， 如果无法容忍，则推荐使用  RedissonRedLock。</p>
 <h1 id="15redis-的过期策略">15.Redis 的过期策略</h1>
 
     </div>
