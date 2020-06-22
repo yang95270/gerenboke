@@ -111,7 +111,7 @@
 <p>下面是Tim yang博客的代码，是memcache的伪代码实现</p>
 </blockquote>
 <figure>
-    <img src="https://qcbkk8ti4.bkt.clouddn.com/redis01.png"/>
+    <img src="http://qcbkk8ti4.bkt.clouddn.com/redis01.png"/>
 </figure>
 
 <p><img src="./imgs/redis01.png" alt=""></p>
@@ -119,7 +119,7 @@
 <p>如果换成redis，就是：</p>
 </blockquote>
 <figure>
-    <img src="https://qcbkk8ti4.bkt.clouddn.com/redis02.png"/>
+    <img src="http://qcbkk8ti4.bkt.clouddn.com/redis02.png"/>
 </figure>
 
 <p><img src="./imgs/redis02.png" alt=""></p>
@@ -128,7 +128,7 @@
 <p>在value内部设置1个超时值(timeout1), timeout1比实际的memcache timeout(timeout2)小。当从cache读取到timeout1发现它已经过期时候，马上延长timeout1并重新设置到cache。然后再从数据库加载数据并设置到cache中。伪代码如下：</p>
 </blockquote>
 <figure>
-    <img src="https://qcbkk8ti4.bkt.clouddn.com/redis03.png"/>
+    <img src="http://qcbkk8ti4.bkt.clouddn.com/redis03.png"/>
 </figure>
 
 <p><img src="./imgs/redis03.png" alt=""></p>
@@ -139,7 +139,7 @@
 <p>​	2、从功能上看，如果不过期，那不就成静态的了吗？所以我们把过期时间存在key对应的value里，如果发现要过期了，通过一个后台的异步线程进行缓存的构建，也就是“逻辑”过期</p>
 </blockquote>
 <figure>
-    <img src="https://qcbkk8ti4.bkt.clouddn.com/redis04.png"/>
+    <img src="http://qcbkk8ti4.bkt.clouddn.com/redis04.png"/>
 </figure>
 
 <p><img src="./imgs/redis04.png" alt=""></p>
@@ -147,7 +147,7 @@
 <p>从实战看，这种方法对于性能非常友好，唯一不足的就是构建缓存时候，其余线程(非构建缓存的线程)可能访问的是老数据，但是对于一般的互联网功能来说这个还是可以忍受。</p>
 </blockquote>
 <figure>
-    <img src="https://qcbkk8ti4.bkt.clouddn.com/redis05.png"/>
+    <img src="http://qcbkk8ti4.bkt.clouddn.com/redis05.png"/>
 </figure>
 
 <p><img src="./imgs/redis05.png" alt=""></p>
@@ -156,7 +156,7 @@
 <p>之前在缓存雪崩那篇文章提到了netflix的hystrix，可以做资源的隔离保护主线程池，如果把这个应用到缓存的构建也未尝不可。</p>
 </blockquote>
 <figure>
-    <img src="https://qcbkk8ti4.bkt.clouddn.com/redis06.png"/>
+    <img src="http://qcbkk8ti4.bkt.clouddn.com/redis06.png"/>
 </figure>
 
 <p><img src="./imgs/redis06.png" alt=""></p>
@@ -392,7 +392,7 @@ AOF 文件中并不常见， 但是对比来说， RDB 几乎是不可能出现�
 <h2 id="实现">实现</h2>
 <p>可以直接通过 <code>set key value px milliseconds nx</code> 命令实现加锁， 通过Lua脚本实现解锁。</p>
 <figure>
-    <img src="https://qcbkk8ti4.bkt.clouddn.com/redis07.png"/>
+    <img src="http://qcbkk8ti4.bkt.clouddn.com/redis07.png"/>
 </figure>
 
 <p><img src="./imgs/redis07.png" alt=""></p>
@@ -426,7 +426,7 @@ AOF 文件中并不常见， 但是对比来说， RDB 几乎是不可能出现�
 <li>只要别人建立了一把分布式锁，你就得不断轮询去尝试获取锁。</li>
 </ol>
 <figure>
-    <img src="https://qcbkk8ti4.bkt.clouddn.com/redis08.png"/>
+    <img src="http://qcbkk8ti4.bkt.clouddn.com/redis08.png"/>
 </figure>
 
 <p><img src="./imgs/redis08.png" alt=""></p>
@@ -436,19 +436,19 @@ AOF 文件中并不常见， 但是对比来说， RDB 几乎是不可能出现�
 <p><strong>Redisson 分布式重入锁用法</strong></p>
 <p>Redisson 支持单点模式、主从模式、哨兵模式、集群模式，这里以单点模式为例：</p>
 <figure>
-    <img src="https://qcbkk8ti4.bkt.clouddn.com/redis09.png"/>
+    <img src="http://qcbkk8ti4.bkt.clouddn.com/redis09.png"/>
 </figure>
 
 <p><img src="./imgs/redis09.png" alt=""></p>
 <p>加锁流程图</p>
 <figure>
-    <img src="https://qcbkk8ti4.bkt.clouddn.com/redis10.jpg"/>
+    <img src="http://qcbkk8ti4.bkt.clouddn.com/redis10.jpg"/>
 </figure>
 
 <p><img src="./imgs/redis10.jpg" alt=""></p>
 <p>解锁流程图</p>
 <figure>
-    <img src="https://qcbkk8ti4.bkt.clouddn.com/redis11.jpg"/>
+    <img src="http://qcbkk8ti4.bkt.clouddn.com/redis11.jpg"/>
 </figure>
 
 <p><img src="./imgs/redis11.jpg" alt=""></p>
