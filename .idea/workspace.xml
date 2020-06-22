@@ -3,7 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="effc3ba9-0e1d-4215-9c09-9159a39d1173" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/post/redis/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/post/redis/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/post/springcloud1/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/post/springcloud1/index.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,7 +44,7 @@
       <workItem from="1592785476853" duration="637000" />
       <workItem from="1592809974890" duration="18000" />
       <workItem from="1592812007066" duration="4814000" />
-      <workItem from="1592822847715" duration="535000" />
+      <workItem from="1592822847715" duration="712000" />
     </task>
     <servers />
   </component>
