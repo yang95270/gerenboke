@@ -37,14 +37,14 @@ Eureka监控面板：
 @Bean @LoadBalanced public RestTemplate restTemplate() { return new RestTemplate(); } 修改调用方式，不再手动获取ip和端口，而是直接通过服务名称调用：
 @Controller @RequestMapping(&#34;consumer/user&#34;) public class UserController { @Autowired private RestTemplate restTemplate; //@Autowired  //private DiscoveryClient discoveryClient; // 注入discoveryClient，通过该客户端获取服务列表  @GetMapping @ResponseBody public User queryUserById(@RequestParam(&#34;id&#34;) Long id){ // 通过client获取服务提供方的服务列表，这里我们只有一个  // ServiceInstance instance = discoveryClient.getInstances(&#34;service-provider&#34;).get(0);  String baseUrl = &#34;http://service-provider/user/&#34; &#43; id; User user = this." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="http://www.chunyangbiji.top/post/springcloud2/" />
+<meta property="og:url" content="https://www.chunyangbiji.top/post/springcloud2/" />
 
 
 
   </head>
   <body>
     <header class="app-header">
-      <a href="http://www.chunyangbiji.top/"><img class="app-header-avatar" src="/avatar.jpg" alt="John Doe" /></a>
+      <a href="https://www.chunyangbiji.top/"><img class="app-header-avatar" src="/avatar.jpg" alt="John Doe" /></a>
       <h1>春洋笔记</h1>
       <p>朝阳热心群众分享.</p>
       <div class="app-header-social">

@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="effc3ba9-0e1d-4215-9c09-9159a39d1173" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -23,7 +22,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../edu/eduUi/ui-pc-static-portal" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -52,10 +51,10 @@
     <option name="version" value="2" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="764" y="362" key="FileChooserDialogImpl" timestamp="1592809990965">
+    <state x="764" y="362" key="FileChooserDialogImpl" timestamp="1592825446800">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="764" y="362" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1592809990965" />
+    <state x="764" y="362" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1592825446800" />
     <state x="620" y="172" width="598" height="804" key="find.popup" timestamp="1592823366496">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
