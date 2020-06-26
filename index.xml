@@ -11,11 +11,34 @@
     
     
     <item>
-      <title>redis-面试题</title>
-      <link>https://www.chunyangbiji.top/post/redis/</link>
+      <title>gitee、github搭建静态博客</title>
+      <link>https://www.chunyangbiji.top/post/giteegithub%E6%90%AD%E5%BB%BA%E9%9D%99%E6%80%81%E5%8D%9A%E5%AE%A2/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://www.chunyangbiji.top/post/redis/</guid>
+      <guid>https://www.chunyangbiji.top/post/giteegithub%E6%90%AD%E5%BB%BA%E9%9D%99%E6%80%81%E5%8D%9A%E5%AE%A2/</guid>
+      <description>关于博客写作平台的选择  写博客的目的很简单，就是记录知识，分享学习。如果花在发布博客的时间大于写博客的时间，那显然这个博客平台是不合格的。
+ Github Pages或Gitee Pages  两者都是托管静态网页的，优点很明显：只要在法律范围之内，你可以发布任何内容，使用任何呈现方式，加上炫酷的主题或定制的工具栏，但是这同样意味着你要花很多时间在定制上。
+相比其他博客平台的写好博客一键发布，你还要考虑一些其他东西：图床，提供交流的评论功能，对站点的编译、提交、推送、重新部署（这是Gitee的缺点，Github并没有这个，但是Github的访问速度是真的一言难尽）。
+还有一个缺点是，由于某些未知原因，上面两者是不能被搜索引擎收录的，也就是说，你的文章是不能被搜索引擎搜索出来的，如果你只是用来记录你的学习经历的话，这点并不算缺点，但是如果你有分享自己知识的想法，我并不建议你用这两者来写博客。
+ 码云 Pages 是一个免费的静态网页托管服务，您可以使用 码云 Pages 托管博客、项目官网等静态网页。目前码云 Pages 支持 Jekyll、Hugo、Hexo编译静态资源。
+直接上硬货01&amp;mdash;-&amp;gt;使用Gitee Pages搭建 前期准备： ​	1.码云（Gitee ）账号&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;ndash;自行申请	【必备】
+​	2.git工具 ，上传项目	【必备】
+​	3.思维敏捷的大脑，专业的技术，丰富的阅历，独特别致的审美，具备快速学习及技术钻研能力，良好的沟通表达能力，毫不吝惜地燃烧自己，发出全部的热，全部的光，全部的能量。&amp;hellip;&amp;hellip;..	【非必备】
+开始： 第一步：新建Gitee仓库 第二步：设置仓库 第三步：创建完毕 第四步：上传项目 ​	需要定义一个公开的index.html作为入口便于Gitee pages服务识别，
+​	至于如何使用git上传项目这里不做详细介绍，
+​	这是我的index.html页面内容作为测试使用
+第五步：依次点击“服务”、“Gitt Pages” 第六步：点击&amp;quot;启动&amp;rdquo; ​	有短暂的等待
+第七部：点击生成的网址进行访问http://yang101.gitee.io/suiyi ​	出现了！！！！
+使用Gitee Pages搭建完毕！！！！！！！！ 下面是是使用GitHub Pages搭建，大致相识。 直接上硬货02&amp;mdash;-&amp;gt;使用Github Pages搭建 前期准备： ​	1.Github 账号&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;ndash;自行申请	【必备】
+​	2.git工具 ，上传项目	【必备】</description>
+    </item>
+    
+    <item>
+      <title>redis-面试题</title>
+      <link>https://www.chunyangbiji.top/post/redis-%E9%9D%A2%E8%AF%95%E9%A2%98/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.chunyangbiji.top/post/redis-%E9%9D%A2%E8%AF%95%E9%A2%98/</guid>
       <description>1.缓存穿透  缓存穿透是指查询一个一定不存在的数据，由于缓存是不命中时被动写的，并且出于容错考虑，如果从存储层查不到数据则不写入缓存，这将导致这个不存在的数据每次请求都要到存储层去查询，失去了缓存的意义。在流量大时，可能DB就挂掉了，要是有人利用不存在的key频繁攻击我们的应用，这就是漏洞。
  解决方案： 有很多种方法可以有效地解决缓存穿透问题，最常见的则是采用布隆过滤器，将所有可能存在的数据哈希到一个足够大的bitmap中，一个一定不存在的数据会被 这个bitmap拦截掉，从而避免了对底层存储系统的查询压力。另外也有一个更为简单粗暴的方法，如果一个查询返回的数据为空（不管是数 据不存在，还是系统故障），我们仍然把这个空结果进行缓存，但它的过期时间会很短，最长不超过五分钟。
 2.缓存雪崩  缓存雪崩是指在我们设置缓存时采用了相同的过期时间，导致缓存在某一时刻同时失效，请求全部转发到DB，DB瞬时压力过重雪崩。
