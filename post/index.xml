@@ -100,12 +100,12 @@ Hystrix：容错管理组件，实现断路器模式，帮助服务依赖中出�
 一般这种情况下我们就需要编写负载均衡算法，在多个实例列表中进行选择。
 不过Eureka中已经帮我们集成了负载均衡组件：Ribbon，简单修改代码即可使用。
 什么是Ribbon：
-  1.1.启动两个服务实例 首先参照yh-eureka启动两个yhServiceProviderApplication实例，一个8081，一个8082。
+1.1.启动两个服务实例 首先参照yh-eureka启动两个yhServiceProviderApplication实例，一个8081，一个8082。
 Eureka监控面板：
-  2.2.开启负载均衡 因为Eureka中已经集成了Ribbon，所以我们无需引入新的依赖，直接修改代码。
+2.2.开启负载均衡 因为Eureka中已经集成了Ribbon，所以我们无需引入新的依赖，直接修改代码。
 修改yh-service-consumer的引导类，在RestTemplate的配置方法上添加@LoadBalanced注解：
 @Bean @LoadBalanced public RestTemplate restTemplate() { return new RestTemplate(); } 修改调用方式，不再手动获取ip和端口，而是直接通过服务名称调用：
-@Controller @RequestMapping(&amp;#34;consumer/user&amp;#34;) public class UserController { @Autowired private RestTemplate restTemplate; //@Autowired  //private DiscoveryClient discoveryClient; // 注入discoveryClient，通过该客户端获取服务列表  @GetMapping @ResponseBody public User queryUserById(@RequestParam(&amp;#34;id&amp;#34;) Long id){ // 通过client获取服务提供方的服务列表，这里我们只有一个  // ServiceInstance instance = discoveryClient.getInstances(&amp;#34;service-provider&amp;#34;).get(0);  String baseUrl = &amp;#34;http://service-provider/user/&amp;#34; + id; User user = this.</description>
+@Controller @RequestMapping(&amp;#34;consumer/user&amp;#34;) public class UserController { @Autowired private RestTemplate restTemplate; //@Autowired  //private DiscoveryClient discoveryClient; // 注入discoveryClient，通过该客户端获取服务列表  @GetMapping @ResponseBody public User queryUserById(@RequestParam(&amp;#34;id&amp;#34;) Long id){ // 通过client获取服务提供方的服务列表，这里我们只有一个  // ServiceInstance instance = discoveryClient.getInstances(&amp;#34;service-provider&amp;#34;).get(0);  String baseUrl = &amp;#34;http://service-provider/user/&amp;#34; + id; User user = this.restTemplate.getForObject(baseUrl, User.class); return user; } } 访问页面，查看结果：</description>
     </item>
     
     <item>
