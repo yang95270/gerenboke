@@ -48,13 +48,14 @@
   1、使用互斥锁(mutex key): 这种解决方案思路比较简单，就是只让一个线程构建缓存，其他线程等待构建缓存的线程执行完，重新从缓存获取数据就可以了（如下图）
 如果是单机，可以用synchronized或者lock来处理，如果是分布式环境可以用分布式锁就可以了（分布式锁，可以用memcache的add, redis的setnx, zookeeper的添加节点操作）。
 下面是Tim yang博客的代码，是memcache的伪代码实现
-    如果换成redis，就是：
-   2、&amp;ldquo;提前&amp;quot;使用互斥锁(mutex key)：  在value内部设置1个超时值(timeout1), timeout1比实际的memcache timeout(timeout2)小。当从cache读取到timeout1发现它已经过期时候，马上延长timeout1并重新设置到cache。然后再从数据库加载数据并设置到cache中。伪代码如下：
-   3、&amp;ldquo;永远不过期&amp;rdquo;：  ​	这里的“永远不过期”包含两层意思：
+  如果换成redis，就是：
+ 2、&amp;ldquo;提前&amp;quot;使用互斥锁(mutex key)：  在value内部设置1个超时值(timeout1), timeout1比实际的memcache timeout(timeout2)小。当从cache读取到timeout1发现它已经过期时候，马上延长timeout1并重新设置到cache。然后再从数据库加载数据并设置到cache中。伪代码如下：
+ 3、&amp;ldquo;永远不过期&amp;rdquo;：  ​	这里的“永远不过期”包含两层意思：
 ​	1、从redis上看，确实没有设置过期时间，这就保证了，不会出现热点key过期问题，也就是“物理”不过期。
 ​	2、从功能上看，如果不过期，那不就成静态的了吗？所以我们把过期时间存在key对应的value里，如果发现要过期了，通过一个后台的异步线程进行缓存的构建，也就是“逻辑”过期
-    从实战看，这种方法对于性能非常友好，唯一不足的就是构建缓存时候，其余线程(非构建缓存的线程)可能访问的是老数据，但是对于一般的互联网功能来说这个还是可以忍受。
-   4、资源保护：  之前在缓存雪崩那篇文章提到了netflix的hystrix，可以做资源的隔离保护主线程池，如果把这个应用到缓存的构建也未尝不可。</description>
+  从实战看，这种方法对于性能非常友好，唯一不足的就是构建缓存时候，其余线程(非构建缓存的线程)可能访问的是老数据，但是对于一般的互联网功能来说这个还是可以忍受。
+   4、资源保护：  之前在缓存雪崩那篇文章提到了netflix的hystrix，可以做资源的隔离保护主线程池，如果把这个应用到缓存的构建也未尝不可。
+ 3、4种方案对比：  作为一个并发量较大的互联网应用，我们的目标有3个: 1、加快用户访问速度，提高用户体验。 2、降低后端负载，保证系统平稳。 3、保证数据“尽可能”及时更新(要不要完全一致，取决于业务，而不是技术。)</description>
     </item>
     
     <item>
@@ -78,14 +79,14 @@ Ribbon：客户端负载均衡的服务调用组件（客户端负载）
 Feign：服务调用，给予Ribbon和Hystrix的声明式服务调用组件 （声明式服务调用）
 Hystrix：容错管理组件，实现断路器模式，帮助服务依赖中出现的延迟和为故障提供强大的容错能力。(熔断、断路器，容错)
 架构图：
-  以上只是其中一部分。
+以上只是其中一部分。
 1.2版本 因为Spring Cloud不同其他独立项目，它拥有很多子项目的大项目。所以它的版本是版本名+版本号 （如Angel.SR6）。
 版本名：是伦敦的地铁名
 版本号：SR（Service Releases）是固定的 ,大概意思是稳定版本。后面会有一个递增的数字。
 所以 Edgware.SR3就是Edgware的第3个Release版本。
-  我们在项目中，会是以Finchley的版本。
+我们在项目中，会是以Finchley的版本。
 其中包含的组件，也都有各自的版本，如下表：
-   Component Edgware.SR3 Finchley.RC1 Finchley.BUILD-SNAPSHOT     spring-cloud-aws 1.2.2.RELEASE 2.0.0.RC1 2.0.0.BUILD-SNAPSHOT   spring-cloud-bus 1.3.2.RELEASE 2.0.0.RC1 2.0.0.BUILD-SNAPSHOT   spring-cloud-cli 1.4.1.RELEASE 2.0.0.RC1 2.0.0.BUILD-SNAPSHOT   spring-cloud-commons 1.3.3.RELEASE 2.0.0.RC1 2.0.0.BUILD-SNAPSHOT   spring-cloud-contract 1.</description>
+   Component Edgware.SR3 Finchley.RC1 Finchley.BUILD-SNAPSHOT     spring-cloud-aws 1.2.2.RELEASE 2.0.0.RC1 2.0.0.BUILD-SNAPSHOT   spring-cloud-bus 1.3.2.RELEASE 2.0.0.RC1 2.0.0.BUILD-SNAPSHOT   spring-cloud-cli 1.4.1.RELEASE 2.0.0.RC1 2.0.0.BUILD-SNAPSHOT   spring-cloud-commons 1.3.3.RELEASE 2.0.0.RC1 2.0.0.BUILD-SNAPSHOT   spring-cloud-contract 1.2.4.RELEASE 2.0.0.RC1 2.</description>
     </item>
     
     <item>
@@ -114,26 +115,26 @@ Eureka监控面板：
       
       <guid>https://www.chunyangbiji.top/post/%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84%E6%BC%94%E5%8F%98/</guid>
       <description>1.系统架构演变 1.1集中式架构 当网站流量很小时，只需一个应用，将所有功能都部署在一起，以减少部署节点和成本。此时，用于简化增删改查工作量的数据访问框架(ORM)是影响项目开发的关键。
-  存在的问题：
+存在的问题：
 代码耦合，开发维护困难
 无法针对不同模块进行针对性优化
 无法水平扩展
 单点容错率低，并发能力差
 1.2.垂直拆分 当访问量逐渐增大，单一应用无法满足需求，此时为了应对更高的并发和业务需求，我们根据业务功能对系统进行拆分:
-  优点：
+优点：
 系统拆分实现了流量分担，解决了并发问题
 可以针对不同模块进行优化
 方便水平扩展，负载均衡，容错率提高
 缺点：
 系统间相互独立，会有很多重复开发工作，影响开发效率
 1.3.分布式服务 当垂直应用越来越多，应用之间交互不可避免，将核心业务抽取出来，作为独立的服务，逐渐形成稳定的服务中心，使前端应用能更快速的响应多变的市场需求。此时，用于提高业务复用及整合的分布式调用是关键。
-  优点：
+优点：
 将基础服务进行了抽取，系统间相互调用，提高了代码复用和开发效率
 缺点：
 系统间耦合度变高，调用关系错综复杂，难以维护
 1.4.流动计算架构（SOA） SOA ：面向服务的架构
 当服务越来越多，容量的评估，小服务资源的浪费等问题逐渐显现，此时需增加一个调度中心基于访问压力实时管理集群容量，提高集群利用率。此时，用于提高机器利用率的资源调度和治理中心(SOA)是关键
-  以前出现了什么问题？
+以前出现了什么问题？
 服务越来越多，需要管理每个服务的地址
 调用关系错综复杂，难以理清依赖关系
 服务过多，服务状态难以管理，无法根据服务情况动态管理
@@ -156,12 +157,20 @@ Eureka监控面板：
 数据库分离：每个服务都使用自己的数据源
 部署独立，服务间虽然有调用，但要做到服务重启不影响其它服务。有利于持续集成和持续交付。每个服务都是独立的组件，可复用，可替换，降低耦合，易维护
 微服务结构图：
-  2.服务调用方式 2.1.RPC和HTTP 无论是微服务还是SOA，都面临着服务间的远程调用。那么服务间的远程调用方式有哪些呢？
+2.服务调用方式 2.1.RPC和HTTP 无论是微服务还是SOA，都面临着服务间的远程调用。那么服务间的远程调用方式有哪些呢？
 常见的远程调用方式有以下2种：
 RPC：Remote Produce Call远程过程调用，类似的还有RMI。自定义数据格式，基于原生TCP通信，速度快，效率高。早期的webservice，现在热门的dubbo，都是RPC的典型代表
 Http：http其实是一种网络传输协议，基于TCP，规定了数据传输的格式。现在客户端浏览器与服务端通信基本都是采用Http协议，也可以用来进行远程服务调用。缺点是消息封装臃肿，优势是对服务的提供和调用方没有任何技术限定，自由灵活，更符合微服务理念。
 现在热门的Rest风格，就可以通过http协议来实现。
-如果你们公司全部采用Java技术栈，那么使用Dubbo作为微服务架构是一个不错的选择。</description>
+如果你们公司全部采用Java技术栈，那么使用Dubbo作为微服务架构是一个不错的选择。
+相反，如果公司的技术栈多样化，而且你更青睐Spring家族，那么SpringCloud搭建微服务是不二之选。在我们的项目中，我们会选择SpringCloud套件，因此我们会使用Http方式来实现服务间调用。
+2.2.Http客户端工具 既然微服务选择了Http，那么我们就需要考虑自己来实现对请求和响应的处理。不过开源世界已经有很多的http客户端工具，能够帮助我们做这些事情，例如：
+HttpClient
+OKHttp
+URLConnection
+接下来，不过这些不同的客户端，API各不相同
+2.3.Spring的RestTemplate Spring提供了一个RestTemplate模板工具类，对基于Http的客户端进行了封装，并且实现了对象与json的序列化和反序列化，非常方便。RestTemplate并没有限定Http的客户端类型，而是进行了抽象，目前常用的3种都有支持：
+HttpClient</description>
     </item>
     
   </channel>

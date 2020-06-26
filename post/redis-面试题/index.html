@@ -21,13 +21,14 @@
   1、使用互斥锁(mutex key): 这种解决方案思路比较简单，就是只让一个线程构建缓存，其他线程等待构建缓存的线程执行完，重新从缓存获取数据就可以了（如下图）
 如果是单机，可以用synchronized或者lock来处理，如果是分布式环境可以用分布式锁就可以了（分布式锁，可以用memcache的add, redis的setnx, zookeeper的添加节点操作）。
 下面是Tim yang博客的代码，是memcache的伪代码实现
-    如果换成redis，就是：
-   2、&ldquo;提前&quot;使用互斥锁(mutex key)：  在value内部设置1个超时值(timeout1), timeout1比实际的memcache timeout(timeout2)小。当从cache读取到timeout1发现它已经过期时候，马上延长timeout1并重新设置到cache。然后再从数据库加载数据并设置到cache中。伪代码如下：
-   3、&ldquo;永远不过期&rdquo;：  ​	这里的“永远不过期”包含两层意思：
+  如果换成redis，就是：
+ 2、&ldquo;提前&quot;使用互斥锁(mutex key)：  在value内部设置1个超时值(timeout1), timeout1比实际的memcache timeout(timeout2)小。当从cache读取到timeout1发现它已经过期时候，马上延长timeout1并重新设置到cache。然后再从数据库加载数据并设置到cache中。伪代码如下：
+ 3、&ldquo;永远不过期&rdquo;：  ​	这里的“永远不过期”包含两层意思：
 ​	1、从redis上看，确实没有设置过期时间，这就保证了，不会出现热点key过期问题，也就是“物理”不过期。
 ​	2、从功能上看，如果不过期，那不就成静态的了吗？所以我们把过期时间存在key对应的value里，如果发现要过期了，通过一个后台的异步线程进行缓存的构建，也就是“逻辑”过期
-    从实战看，这种方法对于性能非常友好，唯一不足的就是构建缓存时候，其余线程(非构建缓存的线程)可能访问的是老数据，但是对于一般的互联网功能来说这个还是可以忍受。
-   4、资源保护：  之前在缓存雪崩那篇文章提到了netflix的hystrix，可以做资源的隔离保护主线程池，如果把这个应用到缓存的构建也未尝不可。"/>
+  从实战看，这种方法对于性能非常友好，唯一不足的就是构建缓存时候，其余线程(非构建缓存的线程)可能访问的是老数据，但是对于一般的互联网功能来说这个还是可以忍受。
+   4、资源保护：  之前在缓存雪崩那篇文章提到了netflix的hystrix，可以做资源的隔离保护主线程池，如果把这个应用到缓存的构建也未尝不可。
+ 3、4种方案对比：  作为一个并发量较大的互联网应用，我们的目标有3个: 1、加快用户访问速度，提高用户体验。 2、降低后端负载，保证系统平稳。 3、保证数据“尽可能”及时更新(要不要完全一致，取决于业务，而不是技术。)"/>
 
     <meta property="og:title" content="redis-面试题" />
 <meta property="og:description" content="1.缓存穿透  缓存穿透是指查询一个一定不存在的数据，由于缓存是不命中时被动写的，并且出于容错考虑，如果从存储层查不到数据则不写入缓存，这将导致这个不存在的数据每次请求都要到存储层去查询，失去了缓存的意义。在流量大时，可能DB就挂掉了，要是有人利用不存在的key频繁攻击我们的应用，这就是漏洞。
@@ -39,13 +40,14 @@
   1、使用互斥锁(mutex key): 这种解决方案思路比较简单，就是只让一个线程构建缓存，其他线程等待构建缓存的线程执行完，重新从缓存获取数据就可以了（如下图）
 如果是单机，可以用synchronized或者lock来处理，如果是分布式环境可以用分布式锁就可以了（分布式锁，可以用memcache的add, redis的setnx, zookeeper的添加节点操作）。
 下面是Tim yang博客的代码，是memcache的伪代码实现
-    如果换成redis，就是：
-   2、&ldquo;提前&quot;使用互斥锁(mutex key)：  在value内部设置1个超时值(timeout1), timeout1比实际的memcache timeout(timeout2)小。当从cache读取到timeout1发现它已经过期时候，马上延长timeout1并重新设置到cache。然后再从数据库加载数据并设置到cache中。伪代码如下：
-   3、&ldquo;永远不过期&rdquo;：  ​	这里的“永远不过期”包含两层意思：
+  如果换成redis，就是：
+ 2、&ldquo;提前&quot;使用互斥锁(mutex key)：  在value内部设置1个超时值(timeout1), timeout1比实际的memcache timeout(timeout2)小。当从cache读取到timeout1发现它已经过期时候，马上延长timeout1并重新设置到cache。然后再从数据库加载数据并设置到cache中。伪代码如下：
+ 3、&ldquo;永远不过期&rdquo;：  ​	这里的“永远不过期”包含两层意思：
 ​	1、从redis上看，确实没有设置过期时间，这就保证了，不会出现热点key过期问题，也就是“物理”不过期。
 ​	2、从功能上看，如果不过期，那不就成静态的了吗？所以我们把过期时间存在key对应的value里，如果发现要过期了，通过一个后台的异步线程进行缓存的构建，也就是“逻辑”过期
-    从实战看，这种方法对于性能非常友好，唯一不足的就是构建缓存时候，其余线程(非构建缓存的线程)可能访问的是老数据，但是对于一般的互联网功能来说这个还是可以忍受。
-   4、资源保护：  之前在缓存雪崩那篇文章提到了netflix的hystrix，可以做资源的隔离保护主线程池，如果把这个应用到缓存的构建也未尝不可。" />
+  从实战看，这种方法对于性能非常友好，唯一不足的就是构建缓存时候，其余线程(非构建缓存的线程)可能访问的是老数据，但是对于一般的互联网功能来说这个还是可以忍受。
+   4、资源保护：  之前在缓存雪崩那篇文章提到了netflix的hystrix，可以做资源的隔离保护主线程池，如果把这个应用到缓存的构建也未尝不可。
+ 3、4种方案对比：  作为一个并发量较大的互联网应用，我们的目标有3个: 1、加快用户访问速度，提高用户体验。 2、降低后端负载，保证系统平稳。 3、保证数据“尽可能”及时更新(要不要完全一致，取决于业务，而不是技术。)" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://www.chunyangbiji.top/post/redis-%E9%9D%A2%E8%AF%95%E9%A2%98/" />
 
@@ -110,56 +112,36 @@
 <p>如果是单机，可以用synchronized或者lock来处理，如果是分布式环境可以用分布式锁就可以了（分布式锁，可以用memcache的add, redis的setnx, zookeeper的添加节点操作）。</p>
 <p>下面是Tim yang博客的代码，是memcache的伪代码实现</p>
 </blockquote>
-<figure>
-    <img src="http://qcbkk8ti4.bkt.clouddn.com/redis01.png"/> 
-</figure>
-
-<p><img src="./imgs/redis01.png" alt=""></p>
+<p><img src="/imgs/redis01.png" alt=""></p>
 <blockquote>
 <p>如果换成redis，就是：</p>
 </blockquote>
-<figure>
-    <img src="http://qcbkk8ti4.bkt.clouddn.com/redis02.png"/> 
-</figure>
-
-<p><img src="./imgs/redis02.png" alt=""></p>
+<p><img src="/imgs/redis02.png" alt=""></p>
 <h4 id="2提前使用互斥锁mutex-key">2、&ldquo;提前&quot;使用互斥锁(mutex key)：</h4>
 <blockquote>
 <p>在value内部设置1个超时值(timeout1), timeout1比实际的memcache timeout(timeout2)小。当从cache读取到timeout1发现它已经过期时候，马上延长timeout1并重新设置到cache。然后再从数据库加载数据并设置到cache中。伪代码如下：</p>
 </blockquote>
-<figure>
-    <img src="http://qcbkk8ti4.bkt.clouddn.com/redis03.png"/> 
-</figure>
-
-<p><img src="./imgs/redis03.png" alt=""></p>
+<p><img src="/imgs/redis03.png" alt=""></p>
 <h4 id="3永远不过期">3、&ldquo;永远不过期&rdquo;：</h4>
 <blockquote>
 <p>​	这里的“永远不过期”包含两层意思：</p>
 <p>​	1、从redis上看，确实没有设置过期时间，这就保证了，不会出现热点key过期问题，也就是“物理”不过期。</p>
 <p>​	2、从功能上看，如果不过期，那不就成静态的了吗？所以我们把过期时间存在key对应的value里，如果发现要过期了，通过一个后台的异步线程进行缓存的构建，也就是“逻辑”过期</p>
 </blockquote>
-<figure>
-    <img src="http://qcbkk8ti4.bkt.clouddn.com/redis04.png"/> 
-</figure>
-
-<p><img src="./imgs/redis04.png" alt=""></p>
+<p><img src="/imgs/redis04.png" alt=""></p>
 <blockquote>
 <p>从实战看，这种方法对于性能非常友好，唯一不足的就是构建缓存时候，其余线程(非构建缓存的线程)可能访问的是老数据，但是对于一般的互联网功能来说这个还是可以忍受。</p>
 </blockquote>
 <figure>
-    <img src="http://qcbkk8ti4.bkt.clouddn.com/redis05.png"/> 
+    <img src=""/> 
 </figure>
 
-<p><img src="./imgs/redis05.png" alt=""></p>
+<p><img src="/imgs/redis05.png" alt=""></p>
 <h4 id="4资源保护">4、资源保护：</h4>
 <blockquote>
 <p>之前在缓存雪崩那篇文章提到了netflix的hystrix，可以做资源的隔离保护主线程池，如果把这个应用到缓存的构建也未尝不可。</p>
 </blockquote>
-<figure>
-    <img src="http://qcbkk8ti4.bkt.clouddn.com/redis06.png"/> 
-</figure>
-
-<p><img src="./imgs/redis06.png" alt=""></p>
+<p><img src="/imgs/redis06.png" alt=""></p>
 <h5 id="34种方案对比">3、4种方案对比：</h5>
 <blockquote>
 <p>作为一个并发量较大的互联网应用，我们的目标有3个: 1、加快用户访问速度，提高用户体验。 2、降低后端负载，保证系统平稳。 3、保证数据“尽可能”及时更新(要不要完全一致，取决于业务，而不是技术。)</p>
@@ -391,11 +373,7 @@ AOF 文件中并不常见， 但是对比来说， RDB 几乎是不可能出现�
 </ul>
 <h2 id="实现">实现</h2>
 <p>可以直接通过 <code>set key value px milliseconds nx</code> 命令实现加锁， 通过Lua脚本实现解锁。</p>
-<figure>
-    <img src="http://qcbkk8ti4.bkt.clouddn.com/redis07.png"/> 
-</figure>
-
-<p><img src="./imgs/redis07.png" alt=""></p>
+<p><img src="/imgs/redis07.png" alt=""></p>
 <h4 id="代码解释"><strong>代码解释</strong></h4>
 <ul>
 <li>set 命令要用 <code>set key value px milliseconds nx</code>，替代 <code>setnx + expire</code> 需要分两次执行命令的方式，保证了原子性，</li>
@@ -425,33 +403,17 @@ AOF 文件中并不常见， 但是对比来说， RDB 几乎是不可能出现�
 <li>要是锁建立失败了，那么就依次之前建立过的锁删除；</li>
 <li>只要别人建立了一把分布式锁，你就得不断轮询去尝试获取锁。</li>
 </ol>
-<figure>
-    <img src="http://qcbkk8ti4.bkt.clouddn.com/redis08.png"/> 
-</figure>
-
-<p><img src="./imgs/redis08.png" alt=""></p>
+<p><img src="/imgs/redis08.png" alt=""></p>
 <h3 id="redisson实现">Redisson实现</h3>
 <p>Redisson是一个在Redis的基础上实现的Java驻内存数据网格（In-Memory Data Grid）。它不仅提供了一系列的分布式的Java常用对象，还实现了可重入锁（Reentrant Lock）、公平锁（Fair Lock、联锁（MultiLock）、 红锁（RedLock）、 读写锁（ReadWriteLock）等，还提供了许多分布式服务。</p>
 <p>Redisson提供了使用Redis的最简单和最便捷的方法。Redisson的宗旨是促进使用者对Redis的关注分离（Separation of Concern），从而让使用者能够将精力更集中地放在处理业务逻辑上。</p>
 <p><strong>Redisson 分布式重入锁用法</strong></p>
 <p>Redisson 支持单点模式、主从模式、哨兵模式、集群模式，这里以单点模式为例：</p>
-<figure>
-    <img src="http://qcbkk8ti4.bkt.clouddn.com/redis09.png"/> 
-</figure>
-
-<p><img src="./imgs/redis09.png" alt=""></p>
+<p><img src="/imgs/redis09.png" alt=""></p>
 <p>加锁流程图</p>
-<figure>
-    <img src="http://qcbkk8ti4.bkt.clouddn.com/redis10.jpg"/> 
-</figure>
-
-<p><img src="./imgs/redis10.jpg" alt=""></p>
+<p><img src="/imgs/redis10.jpg" alt=""></p>
 <p>解锁流程图</p>
-<figure>
-    <img src="http://qcbkk8ti4.bkt.clouddn.com/redis11.jpg"/> 
-</figure>
-
-<p><img src="./imgs/redis11.jpg" alt=""></p>
+<p><img src="/imgs/redis11.jpg" alt=""></p>
 <p>我们可以看到，RedissonLock是可重入的，并且考虑了失败重试，可以设置锁的最大等待时间， 在实现上也做了一些优化，减少了无效的锁申请，提升了资源的利用率。</p>
 <p>需要特别注意的是，RedissonLock 同样没有解决 节点挂掉的时候，存在丢失锁的风险的问题。而现实情况是有一些场景无法容忍的，所以 Redisson 提供了实现了redlock算法的 RedissonRedLock，RedissonRedLock 真正解决了单点失败的问题，代价是需要额外的为 RedissonRedLock 搭建Redis环境。</p>
 <p>所以，如果业务场景可以容忍这种小概率的错误，则推荐使用 RedissonLock， 如果无法容忍，则推荐使用 RedissonRedLock。</p>
